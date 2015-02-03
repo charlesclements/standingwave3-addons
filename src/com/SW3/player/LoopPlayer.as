@@ -19,6 +19,7 @@
 	import flash.display.Sprite;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import com.SW3.gadget.LoopGadget;
 	
 	
 	public class LoopPlayer extends Sprite
@@ -28,6 +29,7 @@
 		public var SOUNDS_DICTIONARY:Dictionary = new Dictionary;
 		public var SOUNDS_ARRAY:Array = [];
 		public var isPlaying:Boolean = false;
+		private var looping:LoopGadget;
 		
 		private var player:AudioPlayer;
 		
@@ -46,78 +48,30 @@
 			trace( this );
 			super();
 			
-			var bg:Bitmap = new Bitmap( new BitmapData( w, h, false, 0xcccccc )
+			var bg:Bitmap = new Bitmap( new BitmapData( w, h, false, 0xcccccc ) );
+			addChild( bg );
+			
+			looping = new LoopGadget;
 			
 			
 		}
 		
 		
-		public function play( sound:Sound, loopStart:Number=0, loopEnd:Number=-1 ):void
+		public function play( id:String ):void
 		{
 			
-			
-			if( isPlaying )
-			{
-				
-				
-				
-				
-			}
-			
+			trace("LoopPlayer - play : " + id);
+			looping.playLoop( id );	
 			
 		}
 		
 		
 		// Add the Sound Sample to an internal Dictionary.
-		public function addLoopSound($id:String, $sound:Sound, $beginsInSeconds:Number=-1, $endsInSeconds:Number=-1):void
+		public function addLoopSound(id:String, sound:Sound, loopStart:Number=0, loopEnd:Number=-1):void
 		{
 			
-			trace("LoopPlayer - addLoopSound : " + $id);
-			
-			// Placed condition in try/catch in case of error.
-			try
-			{
-				
-				if( SOUNDS_DICTIONARY[ $id ] != null ) 
-				{
-					
-					trace( $id + " : Loop already exists." ); 
-					return;
-					
-				}
-				
-			}
-			catch(e:Error)
-			{
-				
-				trace( $id + " : Can be created." ); 
-				
-			}
-			
-			// Create loop stuff here.
-			var length:Number = $sound.length * 44.1;
-			var ss:SoundSource = new SoundSource( $sound, new AudioDescriptor );
-			var begin:uint = ( $beginsInSeconds * length ) / ss.duration;
-			var end:uint = ( $endsInSeconds > -1 ) ? ( $endsInSeconds * length ) / ss.duration : length;
-			var sample:Sample = ss.getSampleRange( begin, end );
-			sample.normalize();
-			
-			// Create ListPerformance.
-			var sequence:ListPerformance = new ListPerformance();
-			for( var i:uint = 0; i < 100; i++ ){ sequence.addSourceAt( i * $endsInSeconds, sample.clone() ) };
-			
-			// Set new obj vars.
-			var o:Object = {};
-			o.sample = sample;
-			o.source = new AudioPerformer(sequence, new AudioDescriptor );
-			o.player = new AudioPlayer;
-			o.isPlaying = false;
-			
-			// Add to Dictionary and Array.
-			SOUNDS_DICTIONARY[ $id ] = o;
-			SOUNDS_ARRAY.push( $id );
-			
-			//sample.destroy();
+			trace("LoopPlayer - addLoopSound : " + id);
+			looping.addLoopSound( id, sound, loopStart, loopEnd );
 			
 		}
 		
@@ -127,6 +81,12 @@
 		{
 			
 			trace("LoopPlayer - playLoop : " + $id);
+			
+			
+			
+			
+			
+			
 			var o:Object = SOUNDS_DICTIONARY[ $id ];
 			if( !o.isPlaying )
 			{
@@ -233,7 +193,7 @@
 				return;
 				
 			}
-			var o:Object = SOUNDS_DICTIONARY[ $id ];
+			//var o:Object = SOUNDS_DICTIONARY[ $id ];
 			//o.isPlaying = false;
 				
 			// Do fading.
